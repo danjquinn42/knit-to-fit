@@ -62,7 +62,10 @@ function clamp(n: number, lo: number, hi: number) {
     <div class="p-4 max-w-6xl mx-auto">
         <div class="layout">
             <aside class="sidebar">
-                <va-collapse v-model="sidebarOpen">
+                <va-collapse
+                    v-model="sidebarOpen"
+                    :header="steps[activeStep].title"
+                >
                     <va-list>
                         <va-list-item
                             v-for="(s, i) in steps"

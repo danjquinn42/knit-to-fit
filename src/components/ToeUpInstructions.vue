@@ -2,9 +2,7 @@
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { steps } from "./steps/steps";
-import InstructionsStep from "../components/InstructionsStep.vue";
 import { getToeUpValues } from "../formulas/toe-up";
-import RenderInstructions from "../components/steps/RenderInstructions";
 
 const route = useRoute();
 const router = useRouter();
@@ -90,10 +88,6 @@ function clamp(n: number, lo: number, hi: number) {
                     :y="y"
                     :footCirc="footCirc"
                     :values="values"
-                />
-                <RenderInstructions
-                    v-else-if="current.instructions"
-                    :render="() => current.instructions!(values)"
                 />
                 <div class="flex gap-2 justify-between mt-3">
                     <va-button

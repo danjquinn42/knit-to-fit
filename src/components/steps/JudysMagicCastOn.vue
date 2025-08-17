@@ -11,15 +11,10 @@
 
         <ol class="mb-3">
             <li>
-                Hold two needles tip-to-tip. Tail over index finger, working
-                yarn over thumb from back.
-                <VaBadge text="VA" color="primary" />
+                Hold two needles tip-to-tip.<k1 /><p1 /> Tail over index finger,
+                working yarn over thumb from back.
             </li>
-            <li>
-                Twist once so strands cross
-                <VaButton preset="plain" class="inline-button"> Plain </VaButton
-                >(anchors first pair).
-            </li>
+            <li>Twist once so strands cross(anchors first pair).</li>
             <li>
                 Alternate: bottom strand over top needle, then top strand over
                 bottom needle, until each has half.
@@ -110,13 +105,5 @@ const isFull = ref(false);
 .full-img {
     max-width: 100%;
     max-height: 100%;
-}
-
-.inline-button {
-    border: none;
-    margin: none;
-    padding: none;
-    position: relative;
-    top: 0.2em;
 }
 </style>

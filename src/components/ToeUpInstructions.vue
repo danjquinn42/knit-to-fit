@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { steps } from "../steps/steps";
+import { steps } from "./steps/steps";
 import InstructionsStep from "../components/InstructionsStep.vue";
 import { getToeUpValues } from "../formulas/toe-up";
 

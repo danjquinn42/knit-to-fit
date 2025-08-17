@@ -1,12 +1,11 @@
-<!-- InstructionsStep.vue -->
 <template>
-    <div class="instructions-step">
-        <slot />
+    <div class="prose max-w-none">
+        <p style="white-space: pre-line">{{ instructions }}</p>
     </div>
 </template>
 
 <script setup lang="ts">
-// no props needed anymore – we’ll let each step manage its own content
+defineProps<{ instructions: string }>();
 </script>
 
 <style scoped>

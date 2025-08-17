@@ -1,94 +1,34 @@
-<template>
-    <div class="p-4 max-w-6xl mx-auto">
-        <va-card outlined>
-            <va-card-title>Toe-Up Instructions</va-card-title>
-
-            <va-card-content>
-                <div class="layout">
-                    <aside class="sidebar">
-                        <va-collapse v-model="sidebarOpen">
-                            <va-list>
-                                <va-list-item
-                                    v-for="s in steps"
-                                    :key="s.name"
-                                    :class="[
-                                        'step-item',
-                                        { active: s.name === activeStep },
-                                    ]"
-                                    @click="goTo(s.name)"
-                                >
-                                    <va-list-item-section>
-                                        <va-list-item-label>
-                                            {{ s.name }}. {{ s.label }}
-                                        </va-list-item-label>
-                                    </va-list-item-section>
-                                </va-list-item>
-                            </va-list>
-                        </va-collapse>
-                    </aside>
-
-                    <!-- Main content -->
-                    <main class="content">
-                        <instructions-step :step="currentStep">
-                            <component :is="steps[activeStep - 1].component" />
-                        </instructions-step>
-
-                        <div class="flex gap-2 justify-between mt-3">
-                            <va-button
-                                :disabled="activeStep <= minStep"
-                                @click="goTo(activeStep - 1)"
-                                preset="secondary"
-                            >
-                                Back
-                            </va-button>
-                            <va-button
-                                :disabled="activeStep >= maxStep"
-                                @click="goTo(activeStep + 1)"
-                                color="primary"
-                            >
-                                Next
-                            </va-button>
-                        </div>
-                    </main>
-                </div>
-            </va-card-content>
-        </va-card>
-    </div>
-</template>
-
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import InstructionsStep from "./InstructionsStep.vue";
-
-import JudysMagicCastOn from "../steps/JudysMagicCastOn.vue";
+import { steps } from "../steps/steps";
+import InstructionsStep from "../components/InstructionsStep.vue";
+import { getToeUpValues } from "../formulas/toe-up";
 
 const route = useRoute();
 const router = useRouter();
 
-const minStep = 1;
-const steps = ref([
-    { name: 1, label: "Judy's Magic Cast On", component: JudysMagicCastOn },
-    // add more steps later…
-]);
-const maxStep = computed(() => steps.value.length);
+const minStep = 0;
+const maxStep = computed(() => steps.length - 1);
 
-const sidebarOpen = ref(false); // collapsed by default
-
-// read from route (strings -> numbers)
 const x = computed(() => Number(route.query.x ?? NaN));
 const y = computed(() => Number(route.query.y ?? NaN));
 const footCirc = computed(() => Number(route.query.footCirc ?? NaN));
 
-// stepper state (pure number)
+const values = computed(() =>
+    getToeUpValues({ x: x.value, y: y.value }, footCirc.value),
+);
+
+const sidebarOpen = ref(false); // collapsed by default
+
 const activeStep = ref<number>(minStep);
-
 onMounted(() => {
-    const stepFromQuery = Number(route.query.step ?? minStep);
-    activeStep.value = clamp(stepFromQuery, minStep, maxStep.value);
+    activeStep.value = clamp(
+        Number(route.query.step ?? minStep),
+        minStep,
+        maxStep.value,
+    );
 });
-
-// keep URL in sync when navigating steps
 watch(activeStep, (s) => {
     router.replace({
         path: route.path,
@@ -98,30 +38,79 @@ watch(activeStep, (s) => {
         },
     });
 });
-
-// sync UI if the URL changes externally
 watch(
     () => route.query.step,
     (val) => {
-        const s = Number(val ?? minStep);
-        activeStep.value = clamp(s, minStep, maxStep.value);
+        activeStep.value = clamp(
+            Number(val ?? minStep),
+            minStep,
+            maxStep.value,
+        );
     },
 );
 
-const currentStep = computed(() => {
-    return (
-        steps.value.find((s) => s.name === activeStep.value) ?? steps.value[0]
-    );
-});
+const current = computed(() => steps[activeStep.value] ?? steps[0]);
 
-function goTo(step: number) {
-    activeStep.value = clamp(step, minStep, maxStep.value);
+function goTo(i: number) {
+    activeStep.value = clamp(i, minStep, maxStep.value);
 }
-
 function clamp(n: number, lo: number, hi: number) {
     return Math.max(lo, Math.min(hi, n));
 }
 </script>
+
+<template>
+    <div class="p-4 max-w-6xl mx-auto">
+        <div class="layout">
+            <aside class="sidebar">
+                <va-collapse v-model="sidebarOpen">
+                    <va-list>
+                        <va-list-item
+                            v-for="(s, i) in steps"
+                            :key="s.id"
+                            :class="['step-item', { active: i === activeStep }]"
+                            @click="goTo(i)"
+                        >
+                            <va-list-item-section>
+                                <va-list-item-label>{{
+                                    s.title
+                                }}</va-list-item-label>
+                            </va-list-item-section>
+                        </va-list-item>
+                    </va-list>
+                </va-collapse>
+            </aside>
+
+            <main class="content">
+                <component
+                    v-if="current.component"
+                    :is="current.component"
+                    :x="x"
+                    :y="y"
+                    :footCirc="footCirc"
+                />
+                <InstructionsStep
+                    v-else-if="current.instructions"
+                    :instructions="current.instructions(values)"
+                />
+                <div class="flex gap-2 justify-between mt-3">
+                    <va-button
+                        :disabled="activeStep <= minStep"
+                        @click="goTo(activeStep - 1)"
+                        preset="secondary"
+                        >Back</va-button
+                    >
+                    <va-button
+                        :disabled="activeStep >= maxStep"
+                        @click="goTo(activeStep + 1)"
+                        color="primary"
+                        >Next</va-button
+                    >
+                </div>
+            </main>
+        </div>
+    </div>
+</template>
 
 <style scoped>
 .layout {
@@ -140,8 +129,6 @@ function clamp(n: number, lo: number, hi: number) {
 .content {
     min-height: 240px;
 }
-
-/* Small screens: sidebar above content */
 @media (max-width: 768px) {
     .layout {
         grid-template-columns: 1fr;

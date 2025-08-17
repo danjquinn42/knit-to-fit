@@ -49,7 +49,7 @@ const showModal = ref(false);
     cursor: pointer;
     position: relative;
     margin: 0 2px;
-    background-color: #192970;
+    /*background-color: #192970;*/
     padding: 1px 4px;
     border-radius: 4px;
 }
@@ -57,7 +57,7 @@ const showModal = ref(false);
 .inline-button {
     font-family: "Courier New", Courier, monospace;
     font-weight: bold;
-    color: antiquewhite !important;
+    /*color: antiquewhite !important;*/
 }
 
 .modal-body {

@@ -10,7 +10,7 @@ function makeAbbrev(tag: string, label: string, content?: ContentFn) {
       return () =>
         h(
           InlineButton,
-          { abbreviation: label },
+          { abbreviation: label.toUpperCase() },
           content ? { default: content } : undefined,
         );
     },
@@ -25,7 +25,7 @@ const Knit = defineComponent({
     return () =>
       h(
         InlineButton,
-        { abbreviation: `K${props.count}` },
+        { abbreviation: `K${props.count}`.toUpperCase() },
         {
           default: () =>
             h("div", [
@@ -52,7 +52,7 @@ const Purl = defineComponent({
     return () =>
       h(
         InlineButton,
-        { abbreviation: `P${props.count}` },
+        { abbreviation: `P${props.count}`.toUpperCase() },
         {
           default: () =>
             h("div", [
